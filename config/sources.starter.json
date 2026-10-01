@@ -1,0 +1,17 @@
+[
+  {
+    "id": "ftc-consumer-protection",
+    "name": "Federal Trade Commission — Consumer Protection",
+    "publisher_type": "federal_agency",
+    "jurisdiction": {"country": "US", "region": "US"},
+    "discovery": {
+      "method": "rss",
+      "url": "https://www.ftc.gov/feeds/press-release-consumer-protection.xml",
+      "parser": "generic_feed"
+    },
+    "enabled": true,
+    "expected_freshness_hours": 168,
+    "rate_limit_per_minute": 6,
+    "notes": "Official endpoint listed at https://www.ftc.gov/news-events/stay-connected/ftc-rss-feeds; checked 2026-10-01. This is a federal starter source; state AG coverage remains to be onboarded."
+  }
+]

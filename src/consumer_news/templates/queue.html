@@ -1,0 +1,65 @@
+<section class="page-heading">
+  <div><p class="eyebrow">YOUR EDITORIAL BRIEFING</p><h1>The review queue<span class="accent">.</span></h1><p class="lede">Find the developments that deserve a closer look.</p></div>
+  <a class="button primary" href="/add">＋ Add a story</a>
+</section>
+{% if notice %}<div class="notice" role="status">{{ notice }}</div>{% endif %}
+{% if is_demo %}<div class="demo-banner"><strong>Demo stories included.</strong> Entries from “Demo Attorney General” are fictional. Use a separate database for your real newsletter.</div>{% endif %}
+<section class="stats" aria-label="Editorial totals">
+  <div><span>Awaiting review</span><strong>{{ counts.pending }}</strong><small>Your next decisions</small></div>
+  <div><span>Approved</span><strong>{{ counts.approved }}</strong><small>Ready for the newsletter</small></div>
+  <div><span>Rejected</span><strong>{{ counts.rejected }}</strong><small>Kept for your records</small></div>
+  <div><span>Stories collected</span><strong>{{ counts.total }}</strong><small>Across all sources</small></div>
+</section>
+<section class="queue-card">
+  <div class="queue-toolbar">
+    <nav class="tabs" aria-label="Editorial status">
+      {% for state, label in [('pending','Pending'),('approved','Approved'),('rejected','Rejected'),('all','All stories')] %}
+      <a href="{{ queue_url(status=state, page_number=1) }}" hx-get="{{ queue_url(status=state, page_number=1) }}" hx-target="#main" class="{{ 'selected' if filters.status == state }}" {% if filters.status == state %}aria-current="page"{% endif %}>{{ label }}{% if state != 'all' %}<span>{{ counts[state] }}</span>{% endif %}</a>
+      {% endfor %}
+    </nav>
+    <span class="sort-label">Highest relevance first</span>
+  </div>
+  <form class="filters" action="/" method="get" hx-get="/" hx-target="#main" hx-push-url="true">
+    <input type="hidden" name="status" value="{{ filters.status }}">
+    <label class="search-label"><span class="sr-only">Search stories</span><input type="search" name="query" value="{{ filters.query }}" placeholder="Search titles, summaries, jurisdictions…" maxlength="200"></label>
+    <label><span>Jurisdiction</span><select name="region"><option value="">All jurisdictions</option>{% for r in regions %}<option {{ 'selected' if filters.region == r }}>{{ r }}</option>{% endfor %}</select></label>
+    <label><span>Source</span><select name="source_id"><option value="">All sources</option>{% for s in sources %}<option value="{{ s.source_id }}" {{ 'selected' if filters.source_id == s.source_id }}>{{ s.name }}</option>{% endfor %}</select></label>
+    <label class="score-filter"><span>Min. score</span><input type="number" name="min_score" min="0" max="100" value="{{ filters.min_score }}"></label>
+    <button class="button" type="submit">Filter</button>
+  </form>
+  {% if rows %}
+  <div class="review-layout">
+    <section class="story-list" aria-label="Stories">
+      <div class="list-caption">{{ rows|length }} STORIES ON THIS PAGE</div>
+      {% for row in rows %}
+      <a class="story {{ 'is-selected' if selected and row.id == selected.id }}" href="{{ queue_url(article=row.id) }}" hx-get="{{ queue_url(article=row.id) }}" hx-target="#main" {% if selected and row.id == selected.id %}aria-current="true"{% endif %}>
+        <div class="story-meta"><span class="region">{{ row.region }}</span><span>{{ row.published_at|date if row.published_at else 'Publication date unknown' }}</span><span class="score" title="Keyword relevance score">{{ row.relevance_score }}</span></div>
+        <h2>{{ row.title }}</h2><p>{{ row.summary|truncate(130) if row.summary else 'No summary supplied.' }}</p>
+        <div class="story-bottom"><span>{{ row.source_name }}</span><span class="status {{ row.editorial_status }}">{{ row.editorial_status }}</span></div>
+      </a>
+      {% endfor %}
+      <div class="pagination">{% if filters.page_number > 1 %}<a href="{{ queue_url(page_number=filters.page_number-1) }}" hx-get="{{ queue_url(page_number=filters.page_number-1) }}" hx-target="#main">← Previous</a>{% endif %}<span>Page {{ filters.page_number }}</span>{% if more %}<a href="{{ queue_url(page_number=filters.page_number+1) }}" hx-get="{{ queue_url(page_number=filters.page_number+1) }}" hx-target="#main">Next →</a>{% endif %}</div>
+    </section>
+    <article class="story-detail" aria-label="Selected story">
+      <div class="detail-top"><span class="eyebrow">STORY DETAILS</span><span class="status {{ selected.editorial_status }}">{{ selected.editorial_status }}</span></div>
+      <h2>{{ selected.title }}</h2><p class="byline">{{ selected.source_name }} <span>·</span> {{ selected.region }}</p>
+      <div class="date-grid"><div><span>Published</span><strong>{{ selected.published_at|date if selected.published_at else 'Unknown' }}</strong></div><div><span>First collected</span><strong>{{ selected.retrieved_at|date }}</strong></div></div>
+      <h3>Source summary</h3><p class="summary">{{ selected.summary or 'This source did not supply a summary. Open the original release to review the story.' }}</p>
+      <a class="source-link" href="{{ selected.url }}" target="_blank" rel="noopener noreferrer">Read original source <span aria-hidden="true">↗</span></a>
+      <div class="signals"><div><h3>Why it surfaced</h3><span class="score large">{{ selected.relevance_score }}<small>/100</small></span></div><p>Keyword matches help you sort. The editorial decision is yours.</p><div class="tags">{% for reason in selected.score_reasons.split(', ') if reason %}<span>{{ reason }}</span>{% else %}<span>No keyword matches</span>{% endfor %}</div></div>
+      <form class="decision-form" action="/articles/{{ selected.id }}/status" method="post" hx-post="/articles/{{ selected.id }}/status" hx-target="#main">
+        <input type="hidden" name="csrf_token" value="{{ csrf }}"><input type="hidden" name="queue_status" value="{{ filters.status }}">
+        {% for key in ['query','min_score','region','source_id','page_number'] %}<input type="hidden" name="{{ key }}" value="{{ filters[key] }}">{% endfor %}
+        {% if selected.editorial_status != 'approved' %}<button class="button primary" name="status" value="approved">✓ Approve story</button>{% endif %}
+        {% if selected.editorial_status != 'rejected' %}<button class="button" name="status" value="rejected">Reject</button>{% endif %}
+        {% if selected.editorial_status != 'pending' %}<button class="button" name="status" value="pending">Return to pending</button>{% endif %}
+      </form>
+      <p class="fine-print">Decisions are saved immediately. You can reopen a story at any time.</p>
+    </article>
+  </div>
+  {% else %}
+  <div class="empty-state"><span class="empty-symbol" aria-hidden="true">▤</span><h2>{{ 'Your news desk starts here.' if counts.total == 0 else 'No stories in this view.' }}</h2><p>{{ 'Add an official source, save a story, or take the dashboard for a spin with fictional demo stories.' if counts.total == 0 else 'Try another status or adjust your filters to find more stories.' }}</p>
+    <div class="button-row">{% if counts.total == 0 %}<a class="button primary" href="/sources">Set up sources</a><form action="/demo" method="post"><input type="hidden" name="csrf_token" value="{{ csrf }}"><button class="button">Try the fictional demo</button></form>{% else %}<a class="button" href="/?status=all">View all stories</a>{% endif %}</div>
+  </div>
+  {% endif %}
+</section>

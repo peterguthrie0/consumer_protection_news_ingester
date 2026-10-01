@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Demo Attorney General News</title>
+    <link>https://agency.example.gov/news</link>
+    <description>Fictional data for trying the local prototype.</description>
+    <item>
+      <title>Attorney General announces consumer privacy settlement</title>
+      <link>https://agency.example.gov/news/privacy-settlement</link>
+      <description>The settlement resolves allegations involving a data breach and requires improved privacy practices and consumer relief.</description>
+      <pubDate>Wed, 23 Sep 2026 14:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>State challenges anticompetitive subscription practices</title>
+      <link>https://agency.example.gov/news/subscription-competition</link>
+      <description>The complaint alleges deceptive subscription fees and harm to competition.</description>
+      <pubDate>Tue, 22 Sep 2026 16:30:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Office publishes annual staff picnic photographs</title>
+      <link>https://agency.example.gov/news/staff-picnic</link>
+      <description>Employees gathered for an annual event.</description>
+      <pubDate>Mon, 21 Sep 2026 12:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

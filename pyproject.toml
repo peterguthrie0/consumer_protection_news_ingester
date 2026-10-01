@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "consumer-protection-news-ingester"
+version = "0.1.0"
+description = "Collect official consumer-protection news for editorial review"
+requires-python = ">=3.11"
+
+[project.optional-dependencies]
+web = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "jinja2>=3.1,<4", "python-multipart>=0.0.20,<1"]
+dev = ["httpx>=0.27,<1", "build>=1,<2"]
+
+[project.scripts]
+cp-news = "consumer_news.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+consumer_news = ["templates/*.html", "static/*", "assets/*.xml"]
