@@ -1,0 +1,61 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.org/consumer-protection-news/source.schema.json",
+  "title": "News source",
+  "description": "Configuration for one official publication source.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "name",
+    "publisher_type",
+    "jurisdiction",
+    "discovery",
+    "enabled"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "publisher_type": {
+      "enum": [
+        "attorney_general",
+        "regulator",
+        "legislature",
+        "court",
+        "federal_agency",
+        "other_official"
+      ]
+    },
+    "jurisdiction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["country", "region"],
+      "properties": {
+        "country": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "region": { "type": "string", "minLength": 2, "maxLength": 8 }
+      }
+    },
+    "discovery": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "url"],
+      "properties": {
+        "method": { "enum": ["rss", "atom", "api", "sitemap", "html"] },
+        "url": { "type": "string", "format": "uri", "pattern": "^https://" },
+        "article_url_pattern": { "type": "string" },
+        "parser": { "type": "string", "minLength": 1 }
+      }
+    },
+    "schedule": {
+      "type": "string",
+      "description": "Five-field cron expression interpreted as UTC."
+    },
+    "expected_freshness_hours": { "type": "integer", "minimum": 1 },
+    "rate_limit_per_minute": { "type": "integer", "minimum": 1, "maximum": 60 },
+    "enabled": { "type": "boolean" },
+    "notes": { "type": "string" }
+  }
+}

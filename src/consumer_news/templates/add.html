@@ -1,0 +1,13 @@
+<section class="page-heading"><div><p class="eyebrow">FROM YOUR RESEARCH</p><h1>Add a story<span class="accent">.</span></h1><p class="lede">Keep a useful find in the same queue as your feeds.</p></div></section>
+<div class="form-layout"><section class="panel">
+  {% if error %}<div class="notice error" role="alert">{{ error }}</div>{% endif %}
+  <form action="/add" method="post" class="editor-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf }}">
+    <label>Story title <input name="title" value="{{ values.get('title','') }}" maxlength="500" required placeholder="The headline of the official release"></label>
+    <label>Official source URL <input name="url" type="url" value="{{ values.get('url','') }}" maxlength="2048" required placeholder="https://…"><small>Use the original agency release or official document.</small></label>
+    <div class="form-grid"><label>Source name <input name="source" value="{{ values.get('source','') }}" maxlength="200" required placeholder="California Attorney General"></label><label>Jurisdiction <input name="region" value="{{ values.get('region','US') }}" minlength="2" maxlength="8" required placeholder="CA"></label></div>
+    <label>Publication date <input type="date" name="published" value="{{ values.get('published','') }}"><small>Leave blank if the source does not give a publication date.</small></label>
+    <label>Summary <textarea name="summary" rows="7" maxlength="20000" placeholder="Add the source’s summary or your own notes on what happened.">{{ values.get('summary','') }}</textarea></label>
+    <div class="button-row"><button class="button primary">Save to review queue</button><a class="button text-button" href="/">Cancel</a></div>
+  </form>
+</section><aside class="margin-note"><p class="eyebrow">AN EDITORIAL REMINDER</p><h2>Start with the source.</h2><p>Keep allegations, settlements, and final holdings distinct. The original release should support the summary.</p><hr><p>New stories begin as pending. Adding a URL that is already saved preserves the existing story and decision.</p></aside></div>

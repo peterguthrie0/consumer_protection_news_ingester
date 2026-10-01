@@ -1,0 +1,21 @@
+[
+  {
+    "id": "example-state-ag-news",
+    "name": "Example State Attorney General news",
+    "publisher_type": "attorney_general",
+    "jurisdiction": {
+      "country": "US",
+      "region": "EX"
+    },
+    "discovery": {
+      "method": "rss",
+      "url": "https://agency.example.gov/news/feed.xml",
+      "parser": "generic_feed"
+    },
+    "schedule": "17 */6 * * *",
+    "expected_freshness_hours": 168,
+    "rate_limit_per_minute": 6,
+    "enabled": false,
+    "notes": "Template only: replace with a verified official source before enabling."
+  }
+]
